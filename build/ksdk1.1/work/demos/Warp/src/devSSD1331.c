@@ -21,7 +21,7 @@ enum
 	kSSD1331PinSCK		= GPIO_MAKE_PIN(HW_GPIOA, 9),
 	kSSD1331PinCSn		= GPIO_MAKE_PIN(HW_GPIOB, 13),
 	kSSD1331PinDC		= GPIO_MAKE_PIN(HW_GPIOA, 12),
-	kSSD1331PinRST		= GPIO_MAKE_PIN(HW_GPIOB, 0),
+	kSSD1331PinRST		= GPIO_MAKE_PIN(HW_GPIOB, 10),
 };
 
 static int
@@ -129,11 +129,11 @@ devSSD1331init(void)
 	writeCommand(kSSD1331CommandMASTERCURRENT);	// 0x87
 	writeCommand(0x06);
 	writeCommand(kSSD1331CommandCONTRASTA);		// 0x81
-	writeCommand(0xFF);
+    writeCommand(0x91);
 	writeCommand(kSSD1331CommandCONTRASTB);		// 0x82
-	writeCommand(0xFF);
+	writeCommand(0x50);
 	writeCommand(kSSD1331CommandCONTRASTC);		// 0x83
-	writeCommand(0xFF);
+	writeCommand(0x7D);
 	writeCommand(kSSD1331CommandDISPLAYON);		// Turn on oled panel
 //	SEGGER_RTT_WriteString(0, "\r\n\tDone with initialization sequence...\n");
 
@@ -162,9 +162,25 @@ devSSD1331init(void)
 	 *	of green.
 	 */
 
+    //set to maximum current
+    writeCommand(kSSD1331CommandMASTERCURRENT);	// 0x87
+	writeCommand(14);     
+    
+    //fill screen green
+    writeCommand(kSSD1331CommandDRAWRECT); //Evoke Draw Rectangle command
+    writeCommand(00);                      //set starting column
+    writeCommand(00);                      //set starting row
+    writeCommand(95);                      //set finishing column   
+    writeCommand(63);                      //set finishing row
+    writeCommand(00);                      //set outline colour A (red)
+    writeCommand(0xFF);                    //set outline colour B (green)
+    writeCommand(00);                      //set outline colour C (blue)
+    writeCommand(00);                      //set fill colour A (red)
+    writeCommand(0xFF);                    //set fill colour B (green)
+    writeCommand(00);                      //set fill colour C (blue)
 	
-
-//	SEGGER_RTT_WriteString(0, "\r\n\tDone with draw rectangle...\n");
+	
+	SEGGER_RTT_WriteString(0, "\r\n\tDone with rectangle...\n");
 
 
 
